@@ -1,39 +1,54 @@
-package feedReader.ui;
+package feedReader.ui.views.channel;
 
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.PWA;
 import feedReader.FeedDataCollector;
 import feedReader.objects.FeedChannel;
 import feedReader.objects.FeedEntry;
-
+import feedReader.ui.MainLayout;
 
 import java.util.List;
 
 
-@Route
-@PWA(name = "Feed Reader Application",
-        shortName = "Feed Reader App",
-        description = "Collect and display information from different feeds",
-        enableInstallPrompt = false)
-public class MainView extends VerticalLayout
+@Route(value="", layout = MainLayout.class)
+@PageTitle("Feed-Channels Overview")
+public class ChannelView extends VerticalLayout
 {
+    //grids
+    private final Grid<FeedChannel> feedGrid = new Grid<>();
+    private final Grid<FeedEntry> entryGrid = new Grid<>();
 
-    public MainView()
+    //buttons
+    private final Button showEntriesButton = new Button("Show Channel Entries");
+    private final Button addToDbButton = new Button("Add Selected Entry to Database");
+
+
+    public ChannelView()
     {
+        createChannelGrid();
+
+        createShowButtonFunctionality();
+        createDbButtonFunctionality();
+
+        H3 headerText = new H3("Available Channels:");
+
+        //add all components
+        add(headerText, feedGrid, showEntriesButton);
+    }
+
+
+    private void createChannelGrid(){
         //get all feed information
         FeedDataCollector feedData = new FeedDataCollector();
         List<FeedChannel> feeds = feedData.getFeedChannelInformation();
 
-        Text headerText = new Text("Available Channels:");
-
         //built grid with channel information from the list of feeds
-        Grid<FeedChannel> feedGrid = new Grid<>();
         feedGrid.setItems(feeds);
         feedGrid.addColumn(FeedChannel::getTitle).setHeader("Title").setResizable(true);
         feedGrid.addColumn(FeedChannel::getDescription).setHeader("Description").setResizable(true);
@@ -41,35 +56,14 @@ public class MainView extends VerticalLayout
         //clickable link
         feedGrid.addComponentColumn(e -> new Anchor(e.getLink(), e.getLink())).setHeader("Link").setResizable(true);
         feedGrid.setHeightByRows(true);
+    }
 
-        //grid for channel entries
-        Grid<FeedEntry> entryGrid = new Grid<>();
 
-        //text for channel entries
-        Text channelText = new Text("Entries from selected Channel:");
-
-        //button to add entry to database
-        Button addToDbButton = new Button("Add Selected Entry to Database");
-        addToDbButton.addClickListener(buttonClickEvent ->
-        {
-            if (entryGrid.getSelectedItems().isEmpty())
-            { //no entry is selected
-
-                Notification.show("No Entry is selected");
-            } else if (entryGrid.getSelectedItems().size() > 1)
-            { //more than one entry is selected; should not be possible
-
-                Notification.show("Please select only one Entry");
-            } else
-            { //exactly one entry is selected
-
-                Notification.show("Entry was successfully added to database");
-            }
-        });
-
+    private void createShowButtonFunctionality()
+    {
+        H3 channelText = new H3("Entries from selected Channel:");
 
         //button to show the entries from the selected channel
-        Button showEntriesButton = new Button("Show Channel Entries");
         showEntriesButton.addClickListener(buttonClickEvent ->
         {
             if (feedGrid.getSelectedItems().isEmpty())
@@ -101,10 +95,28 @@ public class MainView extends VerticalLayout
 
             }
         });
-
-
-        //add all components
-        add(headerText, feedGrid, showEntriesButton);
     }
 
+
+    private void createDbButtonFunctionality()
+    {
+        //button to add the selected entry to database
+        addToDbButton.addClickListener(buttonClickEvent ->
+        {
+            if (entryGrid.getSelectedItems().isEmpty())
+            { //no entry is selected
+
+                Notification.show("No Entry is selected");
+            } else if (entryGrid.getSelectedItems().size() > 1)
+            { //more than one entry is selected; should not be possible
+
+                Notification.show("Please select only one Entry");
+            } else
+            { //exactly one entry is selected
+
+                //TODO: add to database
+                Notification.show("Entry was successfully added to database");
+            }
+        });
+    }
 }
