@@ -48,57 +48,6 @@ public class FeedDataCollector
         return listOfUrls;
     }
 
-    /* Open the feeds (given from the URL), collect the information and add them to an object of FeedChannel */
-    public FeedChannel getFeedChannelInformation()
-    {
-
-        List<Object> urlList = getUrlsFromProperties();
-
-        FeedChannel feedChannel = null;
-
-        //TODO: now getting the first entry in the list -> expand it for all entries
-        Object url = urlList.get(0);
-        try
-        {
-            //open the feed using the rome-framework
-            URL feedUrl = new URL(url.toString());
-            SyndFeedInput feedInput = new SyndFeedInput();
-            SyndFeed feed = feedInput.build(new XmlReader(feedUrl));
-
-            //collect data from the feed-channel
-            String channelTitle = feed.getTitle();
-            String channelLink = feed.getLink();
-            String channelDescription = feed.getDescription();
-            String channelLanguage = feed.getLanguage();
-            String channelCopyright = feed.getCopyright();
-            Date channelPubDate = feed.getPublishedDate();
-
-            //store data in FeedChannel-object
-            feedChannel = new FeedChannel(channelTitle, channelLink, channelDescription, channelLanguage, channelCopyright, channelPubDate);
-
-            //collect entries from feed and add them to the list inside the FeedChannel
-            FeedEntry feedEntry;
-            for (SyndEntry entry : feed.getEntries())
-            {
-                String entryTitle = entry.getTitle();
-                SyndContent entryDescription = entry.getDescription();
-                Date entryPubDate = entry.getPublishedDate();
-                String entryLink = entry.getLink();
-
-                feedEntry = new FeedEntry(entryTitle, reduceStringToFirst20Words(entryDescription.getValue()), entryPubDate, entryLink);
-                feedChannel.addEntry(feedEntry);
-            }
-
-        } catch (IOException | FeedException e)
-        {
-            e.printStackTrace();
-        }
-
-        System.out.println(feedChannel.toString());
-
-        return feedChannel;
-    }
-
     /* returns the first 20 words from String input*/
     private String reduceStringToFirst20Words(String input)
     {
@@ -116,6 +65,60 @@ public class FeedDataCollector
         }
 
         return result.toString();
+    }
+
+
+    /* Open the feeds (given from the URL), collect the information and add them to an object of FeedChannel */
+    public List<FeedChannel> getFeedChannelInformation()
+    {
+        List<Object> urlList = getUrlsFromProperties();
+
+        List<FeedChannel> feedChannels = new LinkedList<>();
+
+        for(Object url: urlList)
+        {
+            try
+            {
+                //open the feed using the rome-framework
+                URL feedUrl = new URL(url.toString());
+                SyndFeedInput feedInput = new SyndFeedInput();
+                SyndFeed feed = feedInput.build(new XmlReader(feedUrl));
+
+                //collect data from the feed-channel
+                String channelTitle = feed.getTitle();
+                String channelLink = feed.getLink();
+                String channelDescription = feed.getDescription();
+                String channelLanguage = feed.getLanguage();
+                String channelCopyright = feed.getCopyright();
+                Date channelPubDate = feed.getPublishedDate();
+
+                //store data in FeedChannel-object
+                FeedChannel fc = new FeedChannel(channelTitle, channelLink, channelDescription, channelLanguage, channelCopyright, channelPubDate);
+
+                //collect entries from feed and add them to the list inside the FeedChannel
+                FeedEntry feedEntry;
+                for (SyndEntry entry : feed.getEntries())
+                {
+                    String entryTitle = entry.getTitle();
+                    SyndContent entryDescription = entry.getDescription();
+                    Date entryPubDate = entry.getPublishedDate();
+                    String entryLink = entry.getLink();
+
+                    feedEntry = new FeedEntry(entryTitle, reduceStringToFirst20Words(entryDescription.getValue()), entryPubDate, entryLink);
+                    fc.addEntry(feedEntry);
+                }
+
+                feedChannels.add(fc);
+
+            } catch (IOException | FeedException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        //System.out.println(fc.toString());
+
+        return feedChannels;
     }
 
 }
