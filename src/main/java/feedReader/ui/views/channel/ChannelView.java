@@ -9,13 +9,15 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import feedReader.FeedDataCollector;
-import feedReader.objects.FeedChannel;
-import feedReader.objects.FeedEntry;
+import feedReader.backend.entity.SavedEntriesEntity;
+import feedReader.backend.service.SavedEntriesService;
+import feedReader.feedObjects.FeedChannel;
+import feedReader.feedObjects.FeedEntry;
 import feedReader.ui.MainLayout;
 
 import java.util.List;
 
-
+/* The channel view: showing the available channels and their entries */
 @Route(value="", layout = MainLayout.class)
 @PageTitle("Feed-Channels Overview")
 public class ChannelView extends VerticalLayout
@@ -28,13 +30,17 @@ public class ChannelView extends VerticalLayout
     private final Button showEntriesButton = new Button("Show Channel Entries");
     private final Button addToDbButton = new Button("Add Selected Entry to Database");
 
+    //service for db-management
+    private final SavedEntriesService savedEntriesService;
 
-    public ChannelView()
+    public ChannelView(SavedEntriesService savedEntriesService)
     {
+        this.savedEntriesService = savedEntriesService;
+
         createChannelGrid();
 
-        createShowButtonFunctionality();
-        createDbButtonFunctionality();
+        setShowButtonFunctionality();
+        setDbButtonFunctionality();
 
         H3 headerText = new H3("Available Channels:");
 
@@ -44,6 +50,7 @@ public class ChannelView extends VerticalLayout
 
 
     private void createChannelGrid(){
+
         //get all feed information
         FeedDataCollector feedData = new FeedDataCollector();
         List<FeedChannel> feeds = feedData.getFeedChannelInformation();
@@ -55,11 +62,12 @@ public class ChannelView extends VerticalLayout
         feedGrid.addColumn(FeedChannel::getPubDate).setHeader("Publication Date").setResizable(true);
         //clickable link
         feedGrid.addComponentColumn(e -> new Anchor(e.getLink(), e.getLink())).setHeader("Link").setResizable(true);
+        //set the height of the grid to the count of existing entries
         feedGrid.setHeightByRows(true);
     }
 
-
-    private void createShowButtonFunctionality()
+    /* set the functionality of the show-channel-entries-button */
+    private void setShowButtonFunctionality()
     {
         H3 channelText = new H3("Entries from selected Channel:");
 
@@ -84,12 +92,13 @@ public class ChannelView extends VerticalLayout
                 entryGrid.removeAllColumns();
                 entryGrid.setItems(channelEntries);
 
+                //add the four columns
                 entryGrid.addColumn(FeedEntry::getTitle).setHeader("Title").setResizable(true);
                 entryGrid.addColumn(FeedEntry::getDescription).setHeader("Description").setResizable(true);
                 entryGrid.addColumn(FeedEntry::getPubDate).setHeader("Publication Date").setResizable(true);
                 entryGrid.addComponentColumn(e -> new Anchor(e.getLink(), e.getLink())).setHeader("Link").setResizable(true);
 
-                //remove entryGrid (it might exist already) and add the new grid and the addToDatabase-button
+                //remove entryGrid (it might exist already) and add the new grid and the addToDatabase-button -> so only one entryGrid is shown at one time
                 remove(channelText, entryGrid);
                 add(channelText, entryGrid, addToDbButton);
 
@@ -98,7 +107,8 @@ public class ChannelView extends VerticalLayout
     }
 
 
-    private void createDbButtonFunctionality()
+    /* set the functionality of the add-selected-entry-to-db-button */
+    private void setDbButtonFunctionality()
     {
         //button to add the selected entry to database
         addToDbButton.addClickListener(buttonClickEvent ->
@@ -114,7 +124,23 @@ public class ChannelView extends VerticalLayout
             } else
             { //exactly one entry is selected
 
-                //TODO: add to database
+                //new entity
+                SavedEntriesEntity savedEntriesEntity = new SavedEntriesEntity();
+
+                //selected entry
+                FeedEntry selectedEntry = entryGrid.getSelectedItems().iterator().next();
+
+                //set entity-values
+                savedEntriesEntity.setTitle(selectedEntry.getTitle());
+                savedEntriesEntity.setDescription(selectedEntry.getDescription());
+                savedEntriesEntity.setPubDate(selectedEntry.getPubDate().toString());
+                savedEntriesEntity.setLink(selectedEntry.getLink());
+
+                //store selected entry in database
+                savedEntriesService.addEntryToDb(savedEntriesEntity);
+
+                //TODO: only store entry, if it's not already in the db
+
                 Notification.show("Entry was successfully added to database");
             }
         });

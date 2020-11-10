@@ -1,7 +1,8 @@
-package feedReader.objects;
+package feedReader.feedObjects;
 
 import java.util.Date;
 
+/* FeedEntry: store the title, description, pubDate and link from an entry of a feed-channel */
 public class FeedEntry
 {
     private final String title;

@@ -6,8 +6,8 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
-import feedReader.objects.FeedChannel;
-import feedReader.objects.FeedEntry;
+import feedReader.feedObjects.FeedChannel;
+import feedReader.feedObjects.FeedEntry;
 import org.apache.commons.codec.Resources;
 
 import java.io.IOException;
@@ -18,9 +18,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
+/* FeedDataCollector: get all (feed-)urls from the properties file and store all necessary information
+ * from them (title, description, pubDate, link, list<FeedEntry>) in a list of FeedChannels */
 public class FeedDataCollector
 {
-
     /* Open the feeds.properties and return all URLs from it as a list */
     private List<Object> getUrlsFromProperties()
     {
@@ -115,8 +116,6 @@ public class FeedDataCollector
                 e.printStackTrace();
             }
         }
-
-        //System.out.println(fc.toString());
 
         return feedChannels;
     }

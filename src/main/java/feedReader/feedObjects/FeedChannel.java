@@ -1,9 +1,10 @@
-package feedReader.objects;
+package feedReader.feedObjects;
 
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+/* FeedChannel: store the title, description, pubDate, link and List<FeedEntry> of a feed-channel */
 public class FeedChannel
 {
     private final String title;
