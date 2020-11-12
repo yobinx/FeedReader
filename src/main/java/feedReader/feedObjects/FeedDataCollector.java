@@ -1,4 +1,4 @@
-package feedReader;
+package feedReader.feedObjects;
 
 import com.rometools.rome.feed.synd.SyndContent;
 import com.rometools.rome.feed.synd.SyndEntry;
@@ -6,14 +6,11 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
-import feedReader.feedObjects.FeedChannel;
-import feedReader.feedObjects.FeedEntry;
 import org.apache.commons.codec.Resources;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -23,7 +20,7 @@ import java.util.Properties;
 public class FeedDataCollector
 {
     /* Open the feeds.properties and return all URLs from it as a list */
-    private List<Object> getUrlsFromProperties()
+    public List<Object> getUrlsFromProperties()
     {
         List<Object> listOfUrls = new LinkedList<>();
 
@@ -50,7 +47,7 @@ public class FeedDataCollector
     }
 
     /* returns the first 20 words from String input*/
-    private String reduceStringToFirst20Words(String input)
+    public String reduceStringToFirst20Words(String input)
     {
         int wordCount = 20;
         String[] stringArray = input.split(" ");
@@ -91,7 +88,7 @@ public class FeedDataCollector
                 String channelDescription = feed.getDescription();
                 String channelLanguage = feed.getLanguage();
                 String channelCopyright = feed.getCopyright();
-                Date channelPubDate = feed.getPublishedDate();
+                String channelPubDate = feed.getPublishedDate().toString();
 
                 //store data in FeedChannel-object
                 FeedChannel fc = new FeedChannel(channelTitle, channelLink, channelDescription, channelLanguage, channelCopyright, channelPubDate);
@@ -102,7 +99,7 @@ public class FeedDataCollector
                 {
                     String entryTitle = entry.getTitle();
                     SyndContent entryDescription = entry.getDescription();
-                    Date entryPubDate = entry.getPublishedDate();
+                    String entryPubDate = entry.getPublishedDate().toString();
                     String entryLink = entry.getLink();
 
                     feedEntry = new FeedEntry(entryTitle, reduceStringToFirst20Words(entryDescription.getValue()), entryPubDate, entryLink);

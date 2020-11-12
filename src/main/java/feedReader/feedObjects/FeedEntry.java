@@ -1,16 +1,14 @@
 package feedReader.feedObjects;
 
-import java.util.Date;
-
 /* FeedEntry: store the title, description, pubDate and link from an entry of a feed-channel */
 public class FeedEntry
 {
     private final String title;
     private final String description;
-    private final Date pubDate;
+    private final String pubDate;
     private final String link;
 
-    public FeedEntry(String title, String description, Date pubDate, String link)
+    public FeedEntry(String title, String description, String pubDate, String link)
     {
         this.title = title;
         this.description = description;
@@ -30,7 +28,7 @@ public class FeedEntry
         return description;
     }
 
-    public Date getPubDate()
+    public String getPubDate()
     {
         return pubDate;
     }

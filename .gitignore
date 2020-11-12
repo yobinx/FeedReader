@@ -16,4 +16,7 @@
 # Dir's
 target/
 node_modules/
+
+#IntelliJ
 .idea/
+*.iml

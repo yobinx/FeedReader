@@ -8,7 +8,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import feedReader.FeedDataCollector;
+import feedReader.feedObjects.FeedDataCollector;
 import feedReader.backend.entity.SavedEntriesEntity;
 import feedReader.backend.service.SavedEntriesService;
 import feedReader.feedObjects.FeedChannel;

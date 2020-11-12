@@ -1,6 +1,5 @@
 package feedReader.feedObjects;
 
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,11 +11,11 @@ public class FeedChannel
     private final String description;
     private final String language;
     private final String copyright;
-    private final Date pubDate;
+    private final String pubDate;
 
     private final List<FeedEntry> entries = new LinkedList<>();
 
-    public FeedChannel(String title, String link, String description, String language, String copyright, Date pubDate)
+    public FeedChannel(String title, String link, String description, String language, String copyright, String pubDate)
     {
         this.title = title;
         this.link = link;
@@ -52,7 +51,7 @@ public class FeedChannel
         return copyright;
     }
 
-    public Date getPubDate()
+    public String getPubDate()
     {
         return pubDate;
     }

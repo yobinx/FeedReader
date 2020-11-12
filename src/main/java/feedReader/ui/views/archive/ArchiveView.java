@@ -64,6 +64,7 @@ public class ArchiveView extends VerticalLayout
 
                 //delete selected entry
                 savedEntriesService.deleteEntryFromDb(archiveGrid.getSelectedItems().iterator().next());
+                Notification.show("Entry was successfully deleted from database");
 
                 //update grid
                 archiveGrid.setItems(savedEntriesService.findAll());
